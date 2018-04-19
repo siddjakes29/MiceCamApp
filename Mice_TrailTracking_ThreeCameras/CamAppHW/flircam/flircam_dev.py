@@ -6,12 +6,16 @@ Created on Mar 26, 2018
 
 import numpy as np
 import PySpin
+from queue import Queue
+from CamAppHW.flircam.flircam_helper_classes import ImageEventHandler
 '''
 FLIRCamDev is the FoundryScope Driver for Point-Grey cameras. It is calling the 
 FLIR Spinnaker Python binding PySpin. The newest version of PySpin can be
 obtained from the FLIR official website
 '''
 class FLIRCamDev(object):
+    data_qsize = 1000
+    recording = False
     
     def __init__(self,camera_sn):
         '''
@@ -20,6 +24,8 @@ class FLIRCamDev(object):
         '''
         self.camera_sn=camera_sn
         self.open()
+        self.data_q = Queue(self.data_qsize)
+        self.record_q = Queue(self.data_qsize)
         
         
     '''
@@ -87,6 +93,20 @@ class FLIRCamDev(object):
             #Begin Acquisition
             self.cam.BeginAcquisition()
             
+        except PySpin.SpinnakerException as ex:
+            print("Error: %s" % ex)
+            
+    def config_event(self, run_func):
+        try:
+            self.event = ImageEventHandler(self, run_func)
+            self.cam.RegisterEvent(self.event)
+        except PySpin.SpinnakerException as ex:
+            print("Error: %s" % ex)
+        
+    def remove_event(self):
+        try:
+            self.cam.UnregisterEvent(self.event)
+            del self.event
         except PySpin.SpinnakerException as ex:
             print("Error: %s" % ex)
             
@@ -189,6 +209,26 @@ class FLIRCamDev(object):
         image: image object
         '''
         image.Save('buffer')
+        
+    def empty(self):
+        return self.data_q.empty()
+            
+ 
+    def write(self,data):
+        self.data_q.put(data)
+        
+    def record_empty(self):
+        return self.record_q.empty()
+    
+    def read_record_frame(self):
+        return self.record_q.get()
+    
+    def write_record_frame(self,image):
+        try:
+            self.record_q.put(PySpin.Image.Create(image))
+        except PySpin.SpinnakerException as ex:
+            print("Error: %s" % ex)
+            
             
     '''
     Setting Functions

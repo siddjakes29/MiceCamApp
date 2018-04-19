@@ -17,8 +17,8 @@ class FLIRCamHW(HardwareComponent):
     def setup(self,camera_sn = ''):
         self.settings.New(name='camera_sn',dtype=str,initial=camera_sn,ro=True)
         self.settings.New(name ='model', dtype = str, initial ='N/A',ro = True)
-        self.settings.New(name = 'width', dtype = int, initial = 1920, ro = True)
-        self.settings.New(name = 'height', dtype = int, initial = 1200, ro = True)
+        self.settings.New(name = 'width', dtype = int, initial = 2048, ro = True)
+        self.settings.New(name = 'height', dtype = int, initial = 2048, ro = True)
         self.settings.New(name = 'auto_exposure', dtype = bool, initial = True, ro = False)
         self.settings.New(name = 'exposure_time', dtype = float, initial = 1000, ro = False)
         self.settings.New(name = 'video_mode', dtype = int, initial = 0, ro = False, vmin = 0, vmax = 2)
@@ -67,6 +67,12 @@ class FLIRCamHW(HardwareComponent):
         
     def to_numpy(self,image):
         return self._dev.to_numpy(image)
+    
+    def config_event(self,run_func):
+        self._dev.config_event(run_func)
+        
+    def remove_event(self):
+        self._dev.remove_event()
         
     def disconnect(self):
         '''

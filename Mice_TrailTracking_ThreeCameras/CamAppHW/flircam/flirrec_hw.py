@@ -5,7 +5,7 @@ Created on Aug 9, 2017
 '''
 
 from ScopeFoundry import HardwareComponent
-from AntCamHW.flircam.flirrec_dev import FLIRRecDev
+from CamAppHW.flircam.flirrec_dev import FLIRRecDev
 import os
 
 class FLIRRecHW(HardwareComponent):
@@ -13,7 +13,7 @@ class FLIRRecHW(HardwareComponent):
     Hardware Component Class for receiving AI input for breathing, licking etc
     '''
     
-    name='flirrec'
+    name='Recorder'
 
     def setup(self,camera_id = 0):
         initial_data_save_dir = os.path.abspath(os.path.join('.', 'data'))

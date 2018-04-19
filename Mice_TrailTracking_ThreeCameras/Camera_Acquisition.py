@@ -26,13 +26,13 @@ class CamApp(BaseMicroscopeApp):
         
         #Add hardware components
         print("Adding Hardware Components")
-        from MiceTrackingHW.flircam.flircam_hw import FLIRCamHW
+        from CamAppHW.flircam.flircam_hw import FLIRCamHW
         Front_cam = FLIRCamHW(self)
         Front_cam.settings.camera_sn.update_value('17550014')
         Front_cam.name = 'Front_cam'
         Top_cam = FLIRCamHW(self)
         Top_cam.settings.camera_sn.update_value('16307752')
-        #Side_cam.name = 'Top_cam'
+        Top_cam.name = 'Top_cam'
         #Side_cam = FLIRCamHW(self)
         #Side_cam.settings.camera_sn.update_value('15420264')
         #Side_cam.name = 'Side_cam'
@@ -40,13 +40,13 @@ class CamApp(BaseMicroscopeApp):
         self.add_hardware(Front_cam)
         #self.add_hardware(Side_cam)
         
-        from MiceTrackingHW.flircam.flirrec_hw import FLIRRecHW
+        from CamAppHW.flircam.flirrec_hw import FLIRRecHW
         self.add_hardware(FLIRRecHW(self))
                
         #Add Measurement components
         print("Create Measurement objects")
-        from MiceTrackingMS.MiceTrack import MiceTrackMeasure
-        self.add_measurement(MiceTrackMeasure(self))
+        from CamAppMS.Measurements import MiceTrack
+        self.add_measurement(MiceTrack(self))
         
         # Connect to custom gui
         
@@ -71,9 +71,10 @@ if __name__ == '__main__':
     import sys
     app = CamApp(sys.argv)
     
-    app.hardware['Side_cam'].connected.update_value(True)
+    app.hardware['Front_cam'].connected.update_value(True)
     app.hardware['Top_cam'].connected.update_value(True)
-    app.hardware['Tracking'].connected.update_value(True)
+    app.hardware['Recorder'].connected.update_value(True)
+    #app.hardware['Side_cam'].connected.update_value(True)
     #app.hardware['daq_timer'].connected.update_value(True)
     
     sys.exit(app.exec_())
